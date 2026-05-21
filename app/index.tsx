@@ -1,11 +1,22 @@
-import { Text, View } from "react-native";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
-    <View className="flex-1 justify-center items-center bg-slate-50">
-      <Text className="text-2xl font-semibold text-red-600">
-        Hello welcome back to my application
-      </Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-h1 font-poppins-bold text-neutral-primary">
+          SpeakWithMe
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+});

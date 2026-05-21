@@ -5,3 +5,38 @@
 :root {
   color-scheme: light;
 }
+
+@layer utilities {
+  /* Tactile 3D Buttons base classes */
+  .btn-3d {
+    @apply border-b-[4px] rounded-xl py-4 px-6 items-center justify-center;
+  }
+
+  .btn-3d-primary {
+    @apply bg-primary border-primaryDark active:border-b-0 active:translate-y-[4px];
+  }
+
+  .btn-3d-success {
+    @apply bg-success border-[#199F56] active:border-b-0 active:translate-y-[4px];
+  }
+
+  .btn-3d-secondary {
+    @apply bg-secondary border-[#3B70D6] active:border-b-0 active:translate-y-[4px];
+  }
+
+  .btn-3d-streak {
+    @apply bg-streak border-[#D67400] active:border-b-0 active:translate-y-[4px];
+  }
+
+  .btn-3d-warning {
+    @apply bg-warning border-[#D6A800] active:border-b-0 active:translate-y-[4px];
+  }
+
+  .btn-3d-error {
+    @apply bg-error border-[#D63E40] active:border-b-0 active:translate-y-[4px];
+  }
+
+  .btn-3d-neutral {
+    @apply bg-surface border-[#D1D5DB] active:border-b-0 active:translate-y-[4px];
+  }
+}
