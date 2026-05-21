@@ -10,30 +10,35 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 interface VerificationModalProps {
   visible: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onVerify: (code: string) => Promise<void>;
   email: string;
 }
 
 export default function VerificationModal({
   visible,
   onClose,
-  onSuccess,
+  onVerify,
   email,
 }: VerificationModalProps) {
   const [code, setCode] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [errorText, setErrorText] = useState("");
   const inputRef = useRef<TextInput>(null);
 
-  // Clear code when modal becomes visible
+  // Clear code and errors when modal becomes visible
   useEffect(() => {
     if (visible) {
       setCode("");
+      setErrorText("");
+      setIsVerifying(false);
       // Auto-focus input when modal opens
       setTimeout(() => {
         inputRef.current?.focus();
@@ -41,22 +46,34 @@ export default function VerificationModal({
     }
   }, [visible]);
 
-  const handleChangeText = (text: string) => {
+  const handleChangeText = async (text: string) => {
+    if (isVerifying) return;
     // Only allow numbers
     const cleanText = text.replace(/[^0-9]/g, "");
     setCode(cleanText);
+    setErrorText("");
 
     if (cleanText.length === 6) {
       // Hide keyboard
       Keyboard.dismiss();
-      // Wait a brief moment for user feedback, then trigger success
-      setTimeout(() => {
-        onSuccess();
-      }, 300);
+      setIsVerifying(true);
+      try {
+        await onVerify(cleanText);
+      } catch (err: any) {
+        setErrorText(
+          err.errors?.[0]?.message ||
+          err.message ||
+          "Invalid verification code. Please try again."
+        );
+        setCode(""); // Reset code on error
+      } finally {
+        setIsVerifying(false);
+      }
     }
   };
 
   const handleBoxPress = () => {
+    if (isVerifying) return;
     inputRef.current?.focus();
   };
 
@@ -81,6 +98,7 @@ export default function VerificationModal({
       boxes.push(
         <TouchableOpacity
           key={i}
+          disabled={isVerifying}
           activeOpacity={0.8}
           onPress={handleBoxPress}
           className={`w-12 h-14 rounded-xl border items-center justify-center ${borderClass} ${bgClass}`}
@@ -115,6 +133,7 @@ export default function VerificationModal({
 
                 {/* Close Button */}
                 <TouchableOpacity
+                  disabled={isVerifying}
                   activeOpacity={0.7}
                   onPress={onClose}
                   className="absolute right-4 top-4 w-8 h-8 items-center justify-center rounded-full bg-neutral-surface"
@@ -146,12 +165,30 @@ export default function VerificationModal({
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   caretHidden={true}
+                  editable={!isVerifying}
                 />
 
                 {/* Visual Boxes Container */}
-                <View className="flex-row justify-between items-center mb-8 px-2">
+                <View className="flex-row justify-between items-center mb-6 px-2">
                   {renderBoxes()}
                 </View>
+
+                {/* Error Text display */}
+                {errorText ? (
+                  <Text className="text-body-sm font-poppins-medium text-error text-center mb-6 px-4">
+                    {errorText}
+                  </Text>
+                ) : null}
+
+                {/* Loading state during verification */}
+                {isVerifying && (
+                  <View className="flex-row justify-center items-center mb-6">
+                    <ActivityIndicator size="small" color="#6C4EF5" className="mr-2" />
+                    <Text className="text-body-sm font-poppins-semibold text-primary">
+                      Verifying code...
+                    </Text>
+                  </View>
+                )}
 
                 {/* Footer Link / Info */}
                 <View className="flex-row justify-center items-center">
@@ -159,9 +196,11 @@ export default function VerificationModal({
                     {"Didn't receive the code?"}
                   </Text>
                   <TouchableOpacity
+                    disabled={isVerifying}
                     activeOpacity={0.7}
                     onPress={() => {
                       setCode("");
+                      setErrorText("");
                       inputRef.current?.focus();
                     }}
                   >
@@ -187,3 +226,4 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
 });
+

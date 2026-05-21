@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,33 +9,143 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { useSignIn, useOAuth } from "@clerk/expo";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 import { images } from "../../constants/images";
 import VerificationModal from "../../components/VerificationModal";
-import { authStore } from "../../store/authStore";
+
+// Complete any pending auth session (essential for OAuth redirects)
+WebBrowser.maybeCompleteAuthSession();
+
+function useWarmUpBrowser() {
+  React.useEffect(() => {
+    // Warm up the android browser to improve performance
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+}
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { signIn } = useSignIn();
   const [email, setEmail] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = () => {
+  // Warm up browser for OAuth flow
+  useWarmUpBrowser();
+
+  // Social OAuth Strategies
+  const { startOAuthFlow: startGoogleOAuth } = useOAuth({ strategy: "oauth_google" });
+  const { startOAuthFlow: startFacebookOAuth } = useOAuth({ strategy: "oauth_facebook" });
+  const { startOAuthFlow: startAppleOAuth } = useOAuth({ strategy: "oauth_apple" });
+
+  const handleSignIn = async () => {
     if (!email) {
       alert("Please enter your email");
       return;
     }
-    setModalVisible(true);
+    setIsLoading(true);
+    try {
+      const { error } = await signIn.create({
+        identifier: email,
+      });
+
+      if (error) {
+        alert(error.message || "Failed to initiate sign-in.");
+        return;
+      }
+
+      // Find the email code factor
+      const emailCodeFactor = signIn.supportedFirstFactors.find(
+        (factor) => factor.strategy === "email_code"
+      );
+
+      if (emailCodeFactor) {
+        const { error: sendError } = await signIn.emailCode.sendCode();
+        if (sendError) {
+          alert(sendError.message || "Failed to send verification code.");
+          return;
+        }
+        setModalVisible(true);
+      } else {
+        alert("Email verification code strategy is not available.");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Failed to send sign-in code.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerificationSuccess = () => {
-    setModalVisible(false);
-    authStore.login(email);
-    // Automatically navigate to index /
-    router.replace("/");
+  const handleVerification = async (code: string) => {
+    const { error } = await signIn.emailCode.verifyCode({
+      code,
+    });
+
+    if (error) {
+      throw new Error(error.message || "Verification failed");
+    }
+
+    if (signIn.status === "complete") {
+      const { error: finalizeError } = await signIn.finalize();
+      if (finalizeError) {
+        throw new Error(finalizeError.message || "Finalize failed");
+      }
+      setModalVisible(false);
+      router.replace("/");
+    } else {
+      throw new Error(`Sign in failed with status: ${signIn.status}`);
+    }
   };
+
+  // OAuth handlers
+  const handleGoogleSignIn = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
+      const { createdSessionId, setActive: setOAuthActive } = await startGoogleOAuth({ redirectUrl });
+      if (createdSessionId && setOAuthActive) {
+        await setOAuthActive({ session: createdSessionId });
+        router.replace("/");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Google Sign-In failed.");
+    }
+  }, [startGoogleOAuth, router]);
+
+  const handleFacebookSignIn = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
+      const { createdSessionId, setActive: setOAuthActive } = await startFacebookOAuth({ redirectUrl });
+      if (createdSessionId && setOAuthActive) {
+        await setOAuthActive({ session: createdSessionId });
+        router.replace("/");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Facebook Sign-In failed.");
+    }
+  }, [startFacebookOAuth, router]);
+
+  const handleAppleSignIn = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
+      const { createdSessionId, setActive: setOAuthActive } = await startAppleOAuth({ redirectUrl });
+      if (createdSessionId && setOAuthActive) {
+        await setOAuthActive({ session: createdSessionId });
+        router.replace("/");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Apple Sign-In failed.");
+    }
+  }, [startAppleOAuth, router]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -111,6 +221,7 @@ export default function SignInScreen() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
+                  editable={!isLoading}
                   className="text-body-lg font-poppins-medium text-neutral-primary p-0 m-0"
                 />
               </View>
@@ -120,12 +231,17 @@ export default function SignInScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleSignIn}
+              disabled={isLoading}
               style={styles.buttonShadow}
               className="w-full bg-primary py-4 rounded-2xl items-center justify-center mt-6"
             >
-              <Text className="text-white font-poppins-bold text-body-lg">
-                Sign In
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text className="text-white font-poppins-bold text-body-lg">
+                  Sign In
+                </Text>
+              )}
             </TouchableOpacity>
 
             {/* "or continue with" Divider */}
@@ -142,6 +258,7 @@ export default function SignInScreen() {
               {/* Google Button */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                onPress={handleGoogleSignIn}
                 className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center space-x-3"
               >
                 <FontAwesome name="google" size={18} color="#EA4335" />
@@ -153,6 +270,7 @@ export default function SignInScreen() {
               {/* Facebook Button */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                onPress={handleFacebookSignIn}
                 className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center space-x-3 mt-3"
               >
                 <FontAwesome name="facebook" size={18} color="#1877F2" />
@@ -164,6 +282,7 @@ export default function SignInScreen() {
               {/* Apple Button */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                onPress={handleAppleSignIn}
                 className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center space-x-3 mt-3"
               >
                 <FontAwesome name="apple" size={18} color="#000000" />
@@ -195,7 +314,7 @@ export default function SignInScreen() {
       <VerificationModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onSuccess={handleVerificationSuccess}
+        onVerify={handleVerification}
         email={email}
       />
     </SafeAreaView>

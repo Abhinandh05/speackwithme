@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,35 +9,138 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { useSignUp, useOAuth } from "@clerk/expo";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 import { images } from "../../constants/images";
 import VerificationModal from "../../components/VerificationModal";
-import { authStore } from "../../store/authStore";
+
+// Complete any pending auth session (essential for OAuth redirects)
+WebBrowser.maybeCompleteAuthSession();
+
+function useWarmUpBrowser() {
+  React.useEffect(() => {
+    // Warm up the android browser to improve performance
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+}
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const { signUp } = useSignUp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = () => {
-    if (!email) {
-      alert("Please enter your email");
+  // Warm up browser for OAuth flow
+  useWarmUpBrowser();
+
+  // Social OAuth Strategies
+  const { startOAuthFlow: startGoogleOAuth } = useOAuth({ strategy: "oauth_google" });
+  const { startOAuthFlow: startFacebookOAuth } = useOAuth({ strategy: "oauth_facebook" });
+  const { startOAuthFlow: startAppleOAuth } = useOAuth({ strategy: "oauth_apple" });
+
+  const handleSignUp = async () => {
+    if (!email || !password) {
+      alert("Please enter both email and password");
       return;
     }
-    setModalVisible(true);
+    setIsLoading(true);
+    try {
+      const { error } = await signUp.create({
+        emailAddress: email,
+        password: password,
+      });
+
+      if (error) {
+        alert(error.message || "Failed to initiate sign up.");
+        return;
+      }
+
+      const { error: sendError } = await signUp.verifications.sendEmailCode();
+      if (sendError) {
+        alert(sendError.message || "Failed to send verification code.");
+        return;
+      }
+
+      setModalVisible(true);
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Failed to initiate sign up.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerificationSuccess = () => {
-    setModalVisible(false);
-    authStore.login(email);
-    // Automatically navigate to index /
-    router.replace("/");
+  const handleVerification = async (code: string) => {
+    const { error } = await signUp.verifications.verifyEmailCode({
+      code,
+    });
+
+    if (error) {
+      throw new Error(error.message || "Verification failed");
+    }
+
+    if (signUp.status === "complete") {
+      const { error: finalizeError } = await signUp.finalize();
+      if (finalizeError) {
+        throw new Error(finalizeError.message || "Finalize failed");
+      }
+      setModalVisible(false);
+      router.replace("/");
+    } else {
+      throw new Error(`Sign up failed with status: ${signUp.status}`);
+    }
   };
+
+  // OAuth handlers
+  const handleGoogleSignUp = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
+      const { createdSessionId, setActive: setOAuthActive } = await startGoogleOAuth({ redirectUrl });
+      if (createdSessionId && setOAuthActive) {
+        await setOAuthActive({ session: createdSessionId });
+        router.replace("/");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Google Sign-Up failed.");
+    }
+  }, [startGoogleOAuth, router]);
+
+  const handleFacebookSignUp = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
+      const { createdSessionId, setActive: setOAuthActive } = await startFacebookOAuth({ redirectUrl });
+      if (createdSessionId && setOAuthActive) {
+        await setOAuthActive({ session: createdSessionId });
+        router.replace("/");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Facebook Sign-Up failed.");
+    }
+  }, [startFacebookOAuth, router]);
+
+  const handleAppleSignUp = useCallback(async () => {
+    try {
+      const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
+      const { createdSessionId, setActive: setOAuthActive } = await startAppleOAuth({ redirectUrl });
+      if (createdSessionId && setOAuthActive) {
+        await setOAuthActive({ session: createdSessionId });
+        router.replace("/");
+      }
+    } catch (err: any) {
+      alert(err.errors?.[0]?.message || err.message || "Apple Sign-In failed.");
+    }
+  }, [startAppleOAuth, router]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -113,6 +216,7 @@ export default function SignUpScreen() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
+                  editable={!isLoading}
                   className="text-body-lg font-poppins-medium text-neutral-primary p-0 m-0"
                 />
               </View>
@@ -131,6 +235,7 @@ export default function SignUpScreen() {
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     autoCorrect={false}
+                    editable={!isLoading}
                     className="text-body-lg font-poppins-medium text-neutral-primary p-0 m-0 flex-1"
                   />
                 </View>
@@ -152,12 +257,17 @@ export default function SignUpScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleSignUp}
+              disabled={isLoading}
               style={styles.buttonShadow}
               className="w-full bg-primary py-4 rounded-2xl items-center justify-center mt-6"
             >
-              <Text className="text-white font-poppins-bold text-body-lg">
-                Sign Up
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text className="text-white font-poppins-bold text-body-lg">
+                  Sign Up
+                </Text>
+              )}
             </TouchableOpacity>
 
             {/* "or continue with" Divider */}
@@ -174,6 +284,7 @@ export default function SignUpScreen() {
               {/* Google Button */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                onPress={handleGoogleSignUp}
                 className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center space-x-3"
               >
                 <FontAwesome name="google" size={18} color="#EA4335" />
@@ -185,6 +296,7 @@ export default function SignUpScreen() {
               {/* Facebook Button */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                onPress={handleFacebookSignUp}
                 className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center space-x-3 mt-3"
               >
                 <FontAwesome name="facebook" size={18} color="#1877F2" />
@@ -196,6 +308,7 @@ export default function SignUpScreen() {
               {/* Apple Button */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                onPress={handleAppleSignUp}
                 className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center space-x-3 mt-3"
               >
                 <FontAwesome name="apple" size={18} color="#000000" />
@@ -227,7 +340,7 @@ export default function SignUpScreen() {
       <VerificationModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onSuccess={handleVerificationSuccess}
+        onVerify={handleVerification}
         email={email}
       />
     </SafeAreaView>

@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useAuth } from "../store/authStore";
+import { useAuth, useUser } from "@clerk/expo";
 import { Feather } from "@expo/vector-icons";
 import { images } from "../constants/images";
 
 export default function Index() {
   const router = useRouter();
-  const { isAuthenticated, email, logout } = useAuth();
-  const [isChecking, setIsChecking] = useState(true);
+  const { isLoaded, isSignedIn, signOut } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     // Check authentication and redirect to onboarding if needed
-    if (!isAuthenticated) {
+    if (isLoaded && !isSignedIn) {
       router.replace("/onboarding");
-    } else {
-      setIsChecking(false);
     }
-  }, [isAuthenticated, router]);
+  }, [isLoaded, isSignedIn, router]);
 
-  if (isChecking || !isAuthenticated) {
+  if (!isLoaded || !isSignedIn) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#6C4EF5" />
@@ -28,9 +26,15 @@ export default function Index() {
     );
   }
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
+
+  const email = user?.emailAddresses[0]?.emailAddress || "";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,7 +50,7 @@ export default function Index() {
             SpeakWithMe
           </Text>
         </View>
-
+ 
         {/* User Info / Streak */}
         <View className="flex-row items-center bg-[#FFF8EE] px-3 py-1.5 rounded-full">
           <Image source={images.streakFire} className="w-5 h-5 mr-1" resizeMode="contain" />
@@ -55,7 +59,7 @@ export default function Index() {
           </Text>
         </View>
       </View>
-
+ 
       {/* Main Content Area */}
       <View className="flex-1 px-6 pt-6 justify-between pb-8">
         {/* Welcome Section */}
@@ -77,6 +81,7 @@ export default function Index() {
               </Text>
             </Text>
           </View>
+
 
           {/* Lesson Card */}
           <View className="bg-white rounded-3xl p-5 border-2 border-primary/20 mt-4 relative overflow-hidden">
