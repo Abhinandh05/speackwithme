@@ -1,0 +1,58 @@
+import { Language } from "@/types/learning";
+
+export const languages: Language[] = [
+  {
+    id: "es",
+    code: "es",
+    name: "Spanish",
+    nativeName: "Español",
+    flag: "https://flagcdn.com/w320/es.png",
+    tagline: "Learn the language of Cervantes and vibrant cultures!",
+    description: "Learn to speak Spanish, the second most spoken language in the world, with vibrant conversations and practical expressions.",
+  },
+  {
+    id: "fr",
+    code: "fr",
+    name: "French",
+    nativeName: "Français",
+    flag: "https://flagcdn.com/w320/fr.png",
+    tagline: "Speak the language of love, fashion, and gastronomy!",
+    description: "Learn to speak French, a global language of culture, diplomacy, and history, with engaging and immersive audio-visual lessons.",
+  },
+  {
+    id: "ja",
+    code: "ja",
+    name: "Japanese",
+    nativeName: "日本語",
+    flag: "https://flagcdn.com/w320/jp.png",
+    tagline: "Discover the land of the rising sun and rich history!",
+    description: "Learn to speak Japanese, from polite interactions and Hiragana/Katakana concepts to practical daily scenarios.",
+  },
+  {
+    id: "ko",
+    code: "ko",
+    name: "Korean",
+    nativeName: "한국어",
+    flag: "https://flagcdn.com/w320/kr.png",
+    tagline: "Learn the language of K-Pop and rich culture!",
+    description: "Learn to speak Korean, with its unique Hangul script and fascinating expressions.",
+  },
+  {
+    id: "de",
+    code: "de",
+    name: "German",
+    nativeName: "Deutsch",
+    flag: "https://flagcdn.com/w320/de.png",
+    tagline: "Unlock the powerhouse of Europe and engineering marvels!",
+    description: "Learn to speak German, a leading language of science, philosophy, and business in Europe.",
+  },
+  {
+    id: "zh",
+    code: "zh",
+    name: "Chinese",
+    nativeName: "中文",
+    flag: "https://flagcdn.com/w320/cn.png",
+    tagline: "Speak the most populous language in the world!",
+    description: "Learn to speak Chinese (Mandarin), with tonal practice, Pinyin, and everyday conversations.",
+  },
+];

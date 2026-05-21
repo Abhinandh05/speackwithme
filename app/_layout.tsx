@@ -4,8 +4,15 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { ClerkProvider, ClerkLoaded } from "@clerk/expo";
+import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-reanimated";
 import { tokenCache } from "../lib/tokenCache";
 import "../global.css";
+
+// Suppress Reanimated value reading warnings in render
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 

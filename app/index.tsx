@@ -117,6 +117,18 @@ export default function Index() {
             </Text>
           </TouchableOpacity>
 
+          {/* Choose Language Button */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push("/language-selection")}
+            className="w-full bg-white border border-neutral-border py-4 rounded-2xl flex-row items-center justify-center mt-3"
+          >
+            <Feather name="globe" size={20} color="#6C4EF5" />
+            <Text className="text-neutral-primary font-poppins-semibold text-body-lg ml-2">
+              Choose Language
+            </Text>
+          </TouchableOpacity>
+
           {/* Log Out Button */}
           <TouchableOpacity
             activeOpacity={0.8}
