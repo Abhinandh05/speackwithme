@@ -16,8 +16,8 @@ export default function OnboardingScreen() {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    // Navigate to the home screen
-    router.replace("/");
+    // Navigate to the sign up screen
+    router.push("/signup");
   };
 
   return (
