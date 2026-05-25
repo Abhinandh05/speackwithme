@@ -9,10 +9,11 @@ import {
   TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { languages } from "../data/languages";
 import { images } from "../constants/images";
+import { useLanguageStore } from "../store/languageStore";
 
 // Learner count mapping to match the design screenshot
 const learnerCounts: Record<string, string> = {
@@ -26,12 +27,29 @@ const learnerCounts: Record<string, string> = {
 
 export default function LanguageSelectionScreen() {
   const router = useRouter();
-  const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>("es"); // Default to Spanish as selected in design
+  const navigation = useNavigation();
+  const persistedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
+  const setSelectedLanguage = useLanguageStore((state) => state.setSelectedLanguageId);
+  const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>(
+    persistedLanguageId ?? "es"
+  ); // Default to Spanish as selected in design
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleConfirm = () => {
     if (selectedLanguageId) {
-      // Navigate back or to home screen (will store in Zustand store in next task)
+      setSelectedLanguage(selectedLanguageId);
+      router.replace("/");
+    }
+  };
+
+  const handleBackPress = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    // When this screen is opened via redirect/replace, there is no back stack.
+    if (persistedLanguageId) {
       router.replace("/");
     }
   };
@@ -48,7 +66,7 @@ export default function LanguageSelectionScreen() {
       <View className="flex-row items-center justify-between px-6 py-4">
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => router.back()}
+          onPress={handleBackPress}
           className="w-10 h-10 items-center justify-center rounded-full bg-white border border-neutral-border"
         >
           <Feather name="chevron-left" size={24} color="#0D132B" />

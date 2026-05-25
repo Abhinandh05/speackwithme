@@ -5,11 +5,16 @@ import { useRouter } from "expo-router";
 import { useAuth, useUser } from "@clerk/expo";
 import { Feather } from "@expo/vector-icons";
 import { images } from "../constants/images";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LANGUAGE_STORE_KEY, useLanguageStore } from "../store/languageStore";
 
 export default function Index() {
   const router = useRouter();
   const { isLoaded, isSignedIn, signOut } = useAuth();
   const { user } = useUser();
+  const selectedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
+  const hasHydrated = useLanguageStore((state) => state.hasHydrated);
+  const clearSelectedLanguageId = useLanguageStore((state) => state.clearSelectedLanguageId);
 
   useEffect(() => {
     // Check authentication and redirect to onboarding if needed
@@ -18,7 +23,13 @@ export default function Index() {
     }
   }, [isLoaded, isSignedIn, router]);
 
-  if (!isLoaded || !isSignedIn) {
+  useEffect(() => {
+    if (isLoaded && isSignedIn && hasHydrated && !selectedLanguageId) {
+      router.replace("/language-selection");
+    }
+  }, [hasHydrated, isLoaded, isSignedIn, router, selectedLanguageId]);
+
+  if (!isLoaded || !isSignedIn || (isSignedIn && !hasHydrated) || !selectedLanguageId) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#6C4EF5" />
@@ -31,6 +42,16 @@ export default function Index() {
       await signOut();
     } catch (err) {
       console.error("Logout failed:", err);
+    }
+  };
+
+  const handleClearLanguageStorage = async () => {
+    try {
+      await AsyncStorage.removeItem(LANGUAGE_STORE_KEY);
+      clearSelectedLanguageId();
+      router.replace("/language-selection");
+    } catch (err) {
+      console.error("Failed to clear language storage:", err);
     }
   };
 
@@ -126,6 +147,17 @@ export default function Index() {
             <Feather name="globe" size={20} color="#6C4EF5" />
             <Text className="text-neutral-primary font-poppins-semibold text-body-lg ml-2">
               Choose Language
+            </Text>
+          </TouchableOpacity>
+
+          {/* Clear Async Storage Button (Testing) */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={handleClearLanguageStorage}
+            className="w-full bg-white border border-[#FECACA] py-4 rounded-2xl items-center justify-center mt-3"
+          >
+            <Text className="text-[#DC2626] font-poppins-semibold text-body-lg">
+              Clear Async Storage
             </Text>
           </TouchableOpacity>
 
