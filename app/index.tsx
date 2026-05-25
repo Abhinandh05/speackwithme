@@ -7,6 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import { images } from "../constants/images";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LANGUAGE_STORE_KEY, useLanguageStore } from "../store/languageStore";
+import { languages } from "../data/languages";
 
 export default function Index() {
   const router = useRouter();
@@ -56,6 +57,8 @@ export default function Index() {
   };
 
   const email = user?.emailAddresses[0]?.emailAddress || "";
+  const selectedLanguage = languages.find((language) => language.id === selectedLanguageId);
+  const selectedLanguageLabel = selectedLanguage?.name ?? "Unknown";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -101,6 +104,23 @@ export default function Index() {
                 {email}
               </Text>
             </Text>
+            <View className="mt-2 items-center">
+              <Text className="text-body-md font-poppins-regular text-neutral-secondary text-center">
+                Learning language
+              </Text>
+              <View className="mt-1 flex-row items-center">
+                {selectedLanguage?.flag ? (
+                  <Image
+                    source={{ uri: selectedLanguage.flag }}
+                    className="w-6 h-6 rounded-full border border-neutral-border/30 mr-2"
+                    resizeMode="cover"
+                  />
+                ) : null}
+                <Text className="font-poppins-semibold text-neutral-primary text-body-md">
+                  {selectedLanguageLabel}
+                </Text>
+              </View>
+            </View>
           </View>
 
 
