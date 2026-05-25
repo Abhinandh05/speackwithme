@@ -114,12 +114,6 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             extrapolate: "clamp",
           });
 
-          const inactiveTranslateY = activeIndex.interpolate({
-            inputRange: [index - 1, index, index + 1],
-            outputRange: [0, 4, 0],
-            extrapolate: "clamp",
-          });
-
           const inactiveScale = activeIndex.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [1, 0.9, 1],
@@ -143,7 +137,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                 <Animated.View
                   style={{
                     opacity: inactiveOpacity,
-                    transform: [{ translateY: inactiveTranslateY }, { scale: inactiveScale }],
+                    transform: [{ scale: inactiveScale }],
                   }}
                   className="items-center"
                 >
@@ -169,7 +163,7 @@ const styles = StyleSheet.create({
   },
   activeBubble: {
     position: "absolute",
-    top: -10,
+    top: 2,
     width: ACTIVE_BUBBLE_SIZE,
     height: ACTIVE_BUBBLE_SIZE,
     borderRadius: ACTIVE_BUBBLE_SIZE / 2,
