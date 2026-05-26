@@ -3,6 +3,7 @@ import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 import { images } from "@/constants/images";
 import { languages } from "@/data/languages";
 import { lessons, vocabulary } from "@/data/lessons";
@@ -57,6 +58,7 @@ function PlanRow({ item }: { item: PlanItem }) {
 
 export default function HomeTabScreen() {
   const { user } = useUser();
+  const posthog = usePostHog();
   const selectedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
 
   const selectedLanguage = useMemo(() => {
@@ -199,6 +201,14 @@ export default function HomeTabScreen() {
             <TouchableOpacity
               activeOpacity={0.9}
               className="mt-3 h-[42px] w-[104px] items-center justify-center rounded-[14px] bg-white"
+              onPress={() => {
+                posthog.capture("home_continue_lesson_tapped", {
+                  language: selectedLanguage?.name,
+                  language_id: selectedLanguageId,
+                  lesson_title: currentLessonTitle,
+                  unit_order: lessonUnit?.order ?? 1,
+                });
+              }}
             >
               <Text className="font-poppins-bold text-[14px] text-primary">Continue</Text>
             </TouchableOpacity>

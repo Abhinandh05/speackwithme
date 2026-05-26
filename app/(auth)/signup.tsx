@@ -17,6 +17,7 @@ import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useSignUp, useOAuth } from "@clerk/expo";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
+import { usePostHog } from "posthog-react-native";
 import { images } from "../../constants/images";
 import VerificationModal from "../../components/VerificationModal";
 
@@ -36,6 +37,7 @@ function useWarmUpBrowser() {
 export default function SignUpScreen() {
   const router = useRouter();
   const { signUp } = useSignUp();
+  const posthog = usePostHog();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -55,6 +57,7 @@ export default function SignUpScreen() {
       alert("Please enter both email and password");
       return;
     }
+    posthog.capture("sign_up_submitted", { method: "email" });
     setIsLoading(true);
     try {
       const { error } = await signUp.create({
@@ -75,6 +78,15 @@ export default function SignUpScreen() {
 
       setModalVisible(true);
     } catch (err: any) {
+      posthog.capture("$exception", {
+        $exception_list: [
+          {
+            type: "SignUpError",
+            value: err.errors?.[0]?.message || err.message || "Failed to initiate sign up.",
+          },
+        ],
+        $exception_source: "sign_up",
+      });
       alert(err.errors?.[0]?.message || err.message || "Failed to initiate sign up.");
     } finally {
       setIsLoading(false);
@@ -95,6 +107,11 @@ export default function SignUpScreen() {
       if (finalizeError) {
         throw new Error(finalizeError.message || "Finalize failed");
       }
+      posthog.capture("sign_up_completed", { method: "email" });
+      posthog.identify(email, {
+        $set: { email },
+        $set_once: { first_sign_up_date: new Date().toISOString() },
+      });
       setModalVisible(false);
       router.replace("/");
     } else {
@@ -104,43 +121,49 @@ export default function SignUpScreen() {
 
   // OAuth handlers
   const handleGoogleSignUp = useCallback(async () => {
+    posthog.capture("sign_up_oauth_started", { provider: "google" });
     try {
       const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
       const { createdSessionId, setActive: setOAuthActive } = await startGoogleOAuth({ redirectUrl });
       if (createdSessionId && setOAuthActive) {
         await setOAuthActive({ session: createdSessionId });
+        posthog.capture("sign_up_oauth_completed", { provider: "google" });
         router.replace("/");
       }
     } catch (err: any) {
       alert(err.errors?.[0]?.message || err.message || "Google Sign-Up failed.");
     }
-  }, [startGoogleOAuth, router]);
+  }, [startGoogleOAuth, router, posthog]);
 
   const handleFacebookSignUp = useCallback(async () => {
+    posthog.capture("sign_up_oauth_started", { provider: "facebook" });
     try {
       const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
       const { createdSessionId, setActive: setOAuthActive } = await startFacebookOAuth({ redirectUrl });
       if (createdSessionId && setOAuthActive) {
         await setOAuthActive({ session: createdSessionId });
+        posthog.capture("sign_up_oauth_completed", { provider: "facebook" });
         router.replace("/");
       }
     } catch (err: any) {
       alert(err.errors?.[0]?.message || err.message || "Facebook Sign-Up failed.");
     }
-  }, [startFacebookOAuth, router]);
+  }, [startFacebookOAuth, router, posthog]);
 
   const handleAppleSignUp = useCallback(async () => {
+    posthog.capture("sign_up_oauth_started", { provider: "apple" });
     try {
       const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
       const { createdSessionId, setActive: setOAuthActive } = await startAppleOAuth({ redirectUrl });
       if (createdSessionId && setOAuthActive) {
         await setOAuthActive({ session: createdSessionId });
+        posthog.capture("sign_up_oauth_completed", { provider: "apple" });
         router.replace("/");
       }
     } catch (err: any) {
       alert(err.errors?.[0]?.message || err.message || "Apple Sign-In failed.");
     }
-  }, [startAppleOAuth, router]);
+  }, [startAppleOAuth, router, posthog]);
 
   return (
     <SafeAreaView style={styles.safeArea}>

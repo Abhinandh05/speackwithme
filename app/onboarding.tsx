@@ -11,11 +11,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAuth } from "@clerk/expo";
 import { Feather } from "@expo/vector-icons";
+import { usePostHog } from "posthog-react-native";
 import { images } from "../constants/images";
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  const posthog = usePostHog();
 
   useEffect(() => {
     // If already authenticated, skip onboarding and go to home
@@ -25,6 +27,7 @@ export default function OnboardingScreen() {
   }, [isLoaded, isSignedIn, router]);
 
   const handleGetStarted = () => {
+    posthog.capture("onboarding_get_started_tapped");
     router.push("/signup");
   };
 

@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { usePostHog } from "posthog-react-native";
 import { languages } from "../data/languages";
 import { images } from "../constants/images";
 import { useLanguageStore } from "../store/languageStore";
@@ -28,6 +29,7 @@ const learnerCounts: Record<string, string> = {
 export default function LanguageSelectionScreen() {
   const router = useRouter();
   const navigation = useNavigation();
+  const posthog = usePostHog();
   const persistedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
   const setSelectedLanguage = useLanguageStore((state) => state.setSelectedLanguageId);
   const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>(
@@ -37,6 +39,12 @@ export default function LanguageSelectionScreen() {
 
   const handleConfirm = () => {
     if (selectedLanguageId) {
+      const lang = languages.find((l) => l.id === selectedLanguageId);
+      posthog.capture("language_confirmed", {
+        language_id: selectedLanguageId,
+        language_name: lang?.name,
+        language_code: lang?.code,
+      });
       setSelectedLanguage(selectedLanguageId);
       router.replace("/");
     }
@@ -112,7 +120,14 @@ export default function LanguageSelectionScreen() {
                 <TouchableOpacity
                   key={lang.id}
                   activeOpacity={0.8}
-                  onPress={() => setSelectedLanguageId(lang.id)}
+                  onPress={() => {
+                    posthog.capture("language_selected", {
+                      language_id: lang.id,
+                      language_name: lang.name,
+                      language_code: lang.code,
+                    });
+                    setSelectedLanguageId(lang.id);
+                  }}
                   className={`flex-row items-center justify-between p-4 rounded-2xl border-2 mb-4 bg-white ${
                     isSelected
                       ? "border-primary bg-[#F0EDFF]/30"

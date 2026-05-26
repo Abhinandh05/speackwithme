@@ -1,11 +1,13 @@
-import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { useEffect, useRef } from "react";
+import { Stack, usePathname, useGlobalSearchParams } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { ClerkProvider, ClerkLoaded } from "@clerk/expo";
 import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-reanimated";
+import { PostHogProvider } from "posthog-react-native";
 import { tokenCache } from "../lib/tokenCache";
+import { posthog } from "../lib/posthog";
 import "../global.css";
 
 // Suppress Reanimated value reading warnings in render
@@ -26,6 +28,32 @@ if (!publishableKey) {
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* Ignore error if splash screen is already hidden */
 });
+
+function RootLayoutNav() {
+  const pathname = usePathname();
+  const params = useGlobalSearchParams();
+  const previousPathname = useRef<string | undefined>(undefined);
+
+  // Manual screen tracking for Expo Router
+  useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      posthog.screen(pathname, {
+        previous_screen: previousPathname.current ?? null,
+        ...params,
+      });
+      previousPathname.current = pathname;
+    }
+  }, [pathname, params]);
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: "#FFFFFF" },
+      }}
+    />
+  );
+}
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -50,15 +78,18 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: "#FFFFFF" },
+        <PostHogProvider
+          client={posthog}
+          autocapture={{
+            captureScreens: true,
+            captureTouches: true,
+            propsToCapture: ["testID"],
           }}
-        />
+        >
+          <StatusBar style="dark" />
+          <RootLayoutNav />
+        </PostHogProvider>
       </ClerkLoaded>
     </ClerkProvider>
   );
 }
-

@@ -17,6 +17,7 @@ import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useSignIn, useOAuth } from "@clerk/expo";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
+import { usePostHog } from "posthog-react-native";
 import { images } from "../../constants/images";
 import VerificationModal from "../../components/VerificationModal";
 
@@ -36,6 +37,7 @@ function useWarmUpBrowser() {
 export default function SignInScreen() {
   const router = useRouter();
   const { signIn } = useSignIn();
+  const posthog = usePostHog();
   const [email, setEmail] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +55,7 @@ export default function SignInScreen() {
       alert("Please enter your email");
       return;
     }
+    posthog.capture("sign_in_submitted", { method: "email" });
     setIsLoading(true);
     try {
       const { error } = await signIn.create({
@@ -80,6 +83,15 @@ export default function SignInScreen() {
         alert("Email verification code strategy is not available.");
       }
     } catch (err: any) {
+      posthog.capture("$exception", {
+        $exception_list: [
+          {
+            type: "SignInError",
+            value: err.errors?.[0]?.message || err.message || "Failed to send sign-in code.",
+          },
+        ],
+        $exception_source: "sign_in",
+      });
       alert(err.errors?.[0]?.message || err.message || "Failed to send sign-in code.");
     } finally {
       setIsLoading(false);
@@ -100,6 +112,10 @@ export default function SignInScreen() {
       if (finalizeError) {
         throw new Error(finalizeError.message || "Finalize failed");
       }
+      posthog.capture("sign_in_completed", { method: "email" });
+      posthog.identify(email, {
+        $set: { email },
+      });
       setModalVisible(false);
       router.replace("/");
     } else {
@@ -109,43 +125,49 @@ export default function SignInScreen() {
 
   // OAuth handlers
   const handleGoogleSignIn = useCallback(async () => {
+    posthog.capture("sign_in_oauth_started", { provider: "google" });
     try {
       const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
       const { createdSessionId, setActive: setOAuthActive } = await startGoogleOAuth({ redirectUrl });
       if (createdSessionId && setOAuthActive) {
         await setOAuthActive({ session: createdSessionId });
+        posthog.capture("sign_in_oauth_completed", { provider: "google" });
         router.replace("/");
       }
     } catch (err: any) {
       alert(err.errors?.[0]?.message || err.message || "Google Sign-In failed.");
     }
-  }, [startGoogleOAuth, router]);
+  }, [startGoogleOAuth, router, posthog]);
 
   const handleFacebookSignIn = useCallback(async () => {
+    posthog.capture("sign_in_oauth_started", { provider: "facebook" });
     try {
       const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
       const { createdSessionId, setActive: setOAuthActive } = await startFacebookOAuth({ redirectUrl });
       if (createdSessionId && setOAuthActive) {
         await setOAuthActive({ session: createdSessionId });
+        posthog.capture("sign_in_oauth_completed", { provider: "facebook" });
         router.replace("/");
       }
     } catch (err: any) {
       alert(err.errors?.[0]?.message || err.message || "Facebook Sign-In failed.");
     }
-  }, [startFacebookOAuth, router]);
+  }, [startFacebookOAuth, router, posthog]);
 
   const handleAppleSignIn = useCallback(async () => {
+    posthog.capture("sign_in_oauth_started", { provider: "apple" });
     try {
       const redirectUrl = Linking.createURL("/", { scheme: "speackwithme" });
       const { createdSessionId, setActive: setOAuthActive } = await startAppleOAuth({ redirectUrl });
       if (createdSessionId && setOAuthActive) {
         await setOAuthActive({ session: createdSessionId });
+        posthog.capture("sign_in_oauth_completed", { provider: "apple" });
         router.replace("/");
       }
     } catch (err: any) {
       alert(err.errors?.[0]?.message || err.message || "Apple Sign-In failed.");
     }
-  }, [startAppleOAuth, router]);
+  }, [startAppleOAuth, router, posthog]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
