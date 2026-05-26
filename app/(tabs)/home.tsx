@@ -10,11 +10,49 @@ import { units } from "@/data/units";
 import { useLanguageStore } from "@/store/languageStore";
 
 const DAILY_GOAL_XP = 20;
-const PLACEHOLDER_AVATAR_URL =
-  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces";
 
 function normalizePlanSubtitle(text: string) {
-  return text.length > 26 ? `${text.slice(0, 23)}...` : text;
+  return text.length > 28 ? `${text.slice(0, 25)}...` : text;
+}
+
+type PlanItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  iconBg: string;
+  icon: React.ReactNode;
+  completed: boolean;
+};
+
+function PlanRow({ item }: { item: PlanItem }) {
+  return (
+    <View className="flex-row items-center">
+      <View
+        className="h-[44px] w-[44px] items-center justify-center rounded-[14px]"
+        style={{ backgroundColor: item.iconBg }}
+      >
+        {item.icon}
+      </View>
+      <View className="ml-3.5 flex-1">
+        <Text className="font-poppins-bold text-[17px] leading-[22px] text-neutral-primary">
+          {item.title}
+        </Text>
+        <Text className="mt-0.5 font-poppins-medium text-[14px] leading-[18px] text-[#8A91A8]">
+          {normalizePlanSubtitle(item.subtitle)}
+        </Text>
+      </View>
+      {item.completed ? (
+        <View className="h-[26px] w-[26px] items-center justify-center rounded-full bg-primary">
+          <Feather name="check" size={14} color="#FFFFFF" />
+        </View>
+      ) : (
+        <View
+          className="h-[26px] w-[26px] rounded-full border-[1.5px] bg-white"
+          style={{ borderColor: "#C9CEDD" }}
+        />
+      )}
+    </View>
+  );
 }
 
 export default function HomeTabScreen() {
@@ -69,6 +107,33 @@ export default function HomeTabScreen() {
   const aiConversationSubtitle = nextChatLesson?.aiTeacherConfig?.name
     ? `Talk with ${nextChatLesson.aiTeacherConfig.name}`
     : "Talk about your day";
+
+  const planItems: PlanItem[] = [
+    {
+      id: "lesson",
+      title: "Lesson",
+      subtitle: currentLessonTitle,
+      iconBg: "#6C4EF5",
+      icon: <Feather name="book-open" size={20} color="#FFFFFF" />,
+      completed: true,
+    },
+    {
+      id: "ai-conversation",
+      title: "AI Conversation",
+      subtitle: aiConversationSubtitle,
+      iconBg: "#6C4EF5",
+      icon: <MaterialCommunityIcons name="headphones" size={22} color="#FFFFFF" />,
+      completed: false,
+    },
+    {
+      id: "new-words",
+      title: "New words",
+      subtitle: `${Math.max(vocabularyCount, 10)} words`,
+      iconBg: "#F36A6A",
+      icon: <MaterialCommunityIcons name="chat-processing" size={20} color="#FFFFFF" />,
+      completed: false,
+    },
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -141,86 +206,18 @@ export default function HomeTabScreen() {
         </View>
 
         <View className="mt-6 flex-row items-center justify-between">
-          <Text className="font-poppins-bold text-[19px] text-neutral-primary">{"Today's plan"}</Text>
-          <TouchableOpacity activeOpacity={0.8}>
+          <Text className="font-poppins-bold text-[19px] text-neutral-primary">
+            {"Today's plan"}
+          </Text>
+          <TouchableOpacity activeOpacity={0.7} hitSlop={8}>
             <Text className="font-poppins-bold text-[15px] text-primary">View all</Text>
           </TouchableOpacity>
         </View>
 
-        <View className="mt-3.5 gap-3.5">
-          <View className="flex-row items-center">
-            <View className="h-[40px] w-[40px] items-center justify-center rounded-[12px] bg-primary">
-              <Feather name="book-open" size={18} color="#FFFFFF" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="font-poppins-bold text-[17px] leading-[20px] text-neutral-primary">
-                Lesson
-              </Text>
-              <Text className="font-poppins-medium text-[14px] leading-[18px] text-[#7A809C]">
-                {normalizePlanSubtitle(currentLessonTitle)}
-              </Text>
-            </View>
-            <View className="h-[22px] w-[22px] items-center justify-center rounded-full bg-primary">
-              <Feather name="check" size={12} color="#FFFFFF" />
-            </View>
-          </View>
-
-          <View className="flex-row items-center">
-            <View className="h-[40px] w-[40px] items-center justify-center rounded-[12px] bg-primary">
-              <MaterialCommunityIcons name="headphones" size={20} color="#FFFFFF" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="font-poppins-bold text-[17px] leading-[20px] text-neutral-primary">
-                AI Conversation
-              </Text>
-              <Text className="font-poppins-medium text-[14px] leading-[18px] text-[#7A809C]">
-                {normalizePlanSubtitle(aiConversationSubtitle)}
-              </Text>
-            </View>
-            <View className="h-[22px] w-[22px] rounded-full border-2 border-[#AAB1C7]" />
-          </View>
-
-          <View className="flex-row items-center">
-            <View className="h-[40px] w-[40px] items-center justify-center rounded-[12px] bg-[#F36A6A]">
-              <MaterialCommunityIcons name="chat-processing" size={18} color="#FFFFFF" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="font-poppins-bold text-[17px] leading-[20px] text-neutral-primary">
-                New words
-              </Text>
-              <Text className="font-poppins-medium text-[14px] leading-[18px] text-[#7A809C]">
-                {`${Math.max(vocabularyCount, 10)} words`}
-              </Text>
-            </View>
-            <View className="h-[22px] w-[22px] rounded-full border-2 border-[#AAB1C7]" />
-          </View>
-        </View>
-
-        <View className="mt-6 flex-row items-center rounded-[18px] bg-[#EEF1E7] px-4 py-3.5">
-          <View className="flex-1 pr-2">
-            <Text className="font-poppins-medium text-[13px] text-[#6D6F76]">Next up</Text>
-            <Text className="mt-0.5 font-poppins-bold text-[19px] leading-[22px] text-neutral-primary">
-              AI Video Call
-            </Text>
-            <Text className="font-poppins-medium text-[14px] text-[#70758C]">
-              Practice speaking
-            </Text>
-          </View>
-
-          <View className="relative h-[68px] w-[100px]">
-            <View className="absolute left-0 top-0 h-[68px] w-[68px] items-center justify-center rounded-full bg-[#DCE8C9]">
-              <Image
-                source={{ uri: PLACEHOLDER_AVATAR_URL }}
-                className="h-[60px] w-[60px] rounded-full"
-              />
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.85}
-              className="absolute right-0 top-1/2 h-[40px] w-[40px] -translate-y-[20px] items-center justify-center rounded-full bg-[#6CC542]"
-            >
-              <Feather name="video" size={18} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
+        <View className="mt-4 gap-5">
+          {planItems.map((item) => (
+            <PlanRow key={item.id} item={item} />
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
