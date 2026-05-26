@@ -247,6 +247,150 @@ export const lessons: Lesson[] = [
       }
     ]
   },
+  {
+    id: "es-l5",
+    unitId: "es-unit-1",
+    title: "Travel & Directions",
+    description: "Ask for directions and find your way around a Spanish city like a local.",
+    type: "vocabulary",
+    xp: 15,
+    order: 5,
+    goals: [
+      "Ask where places are located",
+      "Understand left, right, and straight",
+      "Use polite expressions while traveling",
+    ],
+    activities: [
+      {
+        id: "es-l5-a1",
+        type: "vocabulary_match",
+        instruction: "Match the Spanish direction words with their English translations.",
+        pairs: [
+          { word: "izquierda", translation: "left" },
+          { word: "derecha", translation: "right" },
+          { word: "recto", translation: "straight" },
+          { word: "estación", translation: "station" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "es-l6",
+    unitId: "es-unit-1",
+    title: "Shopping",
+    description: "Shop for clothes, ask for sizes, and bargain politely in Spanish markets.",
+    type: "vocabulary",
+    xp: 15,
+    order: 6,
+    goals: ["Ask for prices", "Talk about clothing items", "Use numbers up to 100"],
+    activities: [
+      {
+        id: "es-l6-a1",
+        type: "vocabulary_match",
+        instruction: "Match Spanish shopping words with their English translations.",
+        pairs: [
+          { word: "ropa", translation: "clothes" },
+          { word: "talla", translation: "size" },
+          { word: "precio", translation: "price" },
+          { word: "barato", translation: "cheap" },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: "fr-l3",
+    unitId: "fr-unit-1",
+    title: "Daily Life",
+    description: "Talk about days, time, and routines in French.",
+    type: "vocabulary",
+    xp: 12,
+    order: 3,
+    goals: ["Say days of the week", "Use simple time expressions"],
+    activities: [
+      {
+        id: "fr-l3-a1",
+        type: "vocabulary_match",
+        instruction: "Match French words with their English translations.",
+        pairs: [
+          { word: "lundi", translation: "monday" },
+          { word: "matin", translation: "morning" },
+          { word: "soir", translation: "evening" },
+          { word: "aujourd'hui", translation: "today" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "fr-l4",
+    unitId: "fr-unit-1",
+    title: "At the Café",
+    description: "Order a croissant and café au lait like a Parisian.",
+    type: "audio",
+    xp: 15,
+    order: 4,
+    goals: ["Order food and drinks", "Be polite at the counter"],
+    activities: [
+      {
+        id: "fr-l4-a1",
+        type: "vocabulary_match",
+        instruction: "Match French café words with their English translations.",
+        pairs: [
+          { word: "café", translation: "coffee" },
+          { word: "croissant", translation: "croissant" },
+          { word: "addition", translation: "bill" },
+          { word: "s'il vous plaît", translation: "please" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "fr-l5",
+    unitId: "fr-unit-1",
+    title: "Travel & Directions",
+    description: "Find your way around Paris and ask for directions.",
+    type: "vocabulary",
+    xp: 15,
+    order: 5,
+    goals: ["Ask where places are", "Know left, right, straight"],
+    activities: [
+      {
+        id: "fr-l5-a1",
+        type: "vocabulary_match",
+        instruction: "Match French direction words with their English translations.",
+        pairs: [
+          { word: "gauche", translation: "left" },
+          { word: "droite", translation: "right" },
+          { word: "tout droit", translation: "straight ahead" },
+          { word: "gare", translation: "train station" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "fr-l6",
+    unitId: "fr-unit-1",
+    title: "Shopping",
+    description: "Shop in Paris and talk about prices and sizes in French.",
+    type: "vocabulary",
+    xp: 15,
+    order: 6,
+    goals: ["Ask for prices", "Talk about clothing"],
+    activities: [
+      {
+        id: "fr-l6-a1",
+        type: "vocabulary_match",
+        instruction: "Match French shopping words with their English translations.",
+        pairs: [
+          { word: "vêtements", translation: "clothes" },
+          { word: "taille", translation: "size" },
+          { word: "prix", translation: "price" },
+          { word: "cher", translation: "expensive" },
+        ],
+      },
+    ],
+  },
+
   // --- JAPANESE LESSONS ---
   {
     id: "ja-l1",
@@ -284,6 +428,121 @@ export const lessons: Lesson[] = [
       }
     ]
   },
+  {
+    id: "ja-l2",
+    unitId: "ja-unit-1",
+    title: "Daily Life",
+    description: "Talk about your day, time, and routine in Japanese.",
+    type: "vocabulary",
+    xp: 12,
+    order: 2,
+    goals: ["Say morning, afternoon, evening", "Use simple time expressions"],
+    activities: [
+      {
+        id: "ja-l2-a1",
+        type: "vocabulary_match",
+        instruction: "Match the Japanese words with their English translations.",
+        pairs: [
+          { word: "朝 (asa)", translation: "morning" },
+          { word: "昼 (hiru)", translation: "noon" },
+          { word: "夜 (yoru)", translation: "night" },
+          { word: "今日 (kyou)", translation: "today" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ja-l3",
+    unitId: "ja-unit-1",
+    title: "At the Café",
+    description: "Order a matcha, ask for the menu, and pay in Japanese.",
+    type: "audio",
+    xp: 15,
+    order: 3,
+    goals: ["Order food politely", "Ask for the bill"],
+    activities: [
+      {
+        id: "ja-l3-a1",
+        type: "vocabulary_match",
+        instruction: "Match Japanese café words with English translations.",
+        pairs: [
+          { word: "メニュー (menyuu)", translation: "menu" },
+          { word: "お茶 (ocha)", translation: "tea" },
+          { word: "水 (mizu)", translation: "water" },
+          { word: "ください (kudasai)", translation: "please give me" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ja-l4",
+    unitId: "ja-unit-1",
+    title: "Travel & Directions",
+    description: "Navigate Tokyo with confidence by asking where things are.",
+    type: "vocabulary",
+    xp: 15,
+    order: 4,
+    goals: ["Ask for directions", "Recognize key place names"],
+    activities: [
+      {
+        id: "ja-l4-a1",
+        type: "vocabulary_match",
+        instruction: "Match Japanese direction words with English translations.",
+        pairs: [
+          { word: "駅 (eki)", translation: "station" },
+          { word: "右 (migi)", translation: "right" },
+          { word: "左 (hidari)", translation: "left" },
+          { word: "まっすぐ (massugu)", translation: "straight" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ja-l5",
+    unitId: "ja-unit-1",
+    title: "Shopping",
+    description: "Shop in Japan and ask how much things cost.",
+    type: "vocabulary",
+    xp: 15,
+    order: 5,
+    goals: ["Ask for prices", "Use numbers"],
+    activities: [
+      {
+        id: "ja-l5-a1",
+        type: "vocabulary_match",
+        instruction: "Match Japanese shopping words with their English translations.",
+        pairs: [
+          { word: "いくら (ikura)", translation: "how much" },
+          { word: "円 (en)", translation: "yen" },
+          { word: "高い (takai)", translation: "expensive" },
+          { word: "安い (yasui)", translation: "cheap" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ja-l6",
+    unitId: "ja-unit-1",
+    title: "Family & Friends",
+    description: "Introduce your family and friends in Japanese.",
+    type: "vocabulary",
+    xp: 15,
+    order: 6,
+    goals: ["Talk about family", "Introduce others"],
+    activities: [
+      {
+        id: "ja-l6-a1",
+        type: "vocabulary_match",
+        instruction: "Match Japanese family words with English translations.",
+        pairs: [
+          { word: "家族 (kazoku)", translation: "family" },
+          { word: "お母さん (okaasan)", translation: "mother" },
+          { word: "お父さん (otousan)", translation: "father" },
+          { word: "友達 (tomodachi)", translation: "friend" },
+        ],
+      },
+    ],
+  },
   // --- GERMAN LESSONS ---
   {
     id: "de-l1",
@@ -320,7 +579,402 @@ export const lessons: Lesson[] = [
         context: "Danke means thank you. You can say 'Danke schön' for thank you very much."
       }
     ]
-  }
+  },
+  {
+    id: "de-l2",
+    unitId: "de-unit-1",
+    title: "Daily Life",
+    description: "Talk about days, time, and routines in German.",
+    type: "vocabulary",
+    xp: 12,
+    order: 2,
+    goals: ["Say days of the week", "Use simple time expressions"],
+    activities: [
+      {
+        id: "de-l2-a1",
+        type: "vocabulary_match",
+        instruction: "Match German words with their English translations.",
+        pairs: [
+          { word: "Montag", translation: "monday" },
+          { word: "Morgen", translation: "morning" },
+          { word: "Abend", translation: "evening" },
+          { word: "heute", translation: "today" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "de-l3",
+    unitId: "de-unit-1",
+    title: "At the Café",
+    description: "Order coffee and pastries in a German café.",
+    type: "audio",
+    xp: 15,
+    order: 3,
+    goals: ["Order food", "Ask for the bill"],
+    activities: [
+      {
+        id: "de-l3-a1",
+        type: "vocabulary_match",
+        instruction: "Match German café words with their English translations.",
+        pairs: [
+          { word: "Kaffee", translation: "coffee" },
+          { word: "Kuchen", translation: "cake" },
+          { word: "Rechnung", translation: "bill" },
+          { word: "bitte", translation: "please" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "de-l4",
+    unitId: "de-unit-1",
+    title: "Travel & Directions",
+    description: "Find your way around Berlin and ask for directions.",
+    type: "vocabulary",
+    xp: 15,
+    order: 4,
+    goals: ["Ask for directions", "Know key direction words"],
+    activities: [
+      {
+        id: "de-l4-a1",
+        type: "vocabulary_match",
+        instruction: "Match German direction words with their English translations.",
+        pairs: [
+          { word: "links", translation: "left" },
+          { word: "rechts", translation: "right" },
+          { word: "geradeaus", translation: "straight ahead" },
+          { word: "Bahnhof", translation: "train station" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "de-l5",
+    unitId: "de-unit-1",
+    title: "Shopping",
+    description: "Shop in Germany and talk about prices and sizes.",
+    type: "vocabulary",
+    xp: 15,
+    order: 5,
+    goals: ["Ask for prices", "Talk about clothing"],
+    activities: [
+      {
+        id: "de-l5-a1",
+        type: "vocabulary_match",
+        instruction: "Match German shopping words with their English translations.",
+        pairs: [
+          { word: "Kleidung", translation: "clothes" },
+          { word: "Größe", translation: "size" },
+          { word: "Preis", translation: "price" },
+          { word: "teuer", translation: "expensive" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "de-l6",
+    unitId: "de-unit-1",
+    title: "Family & Friends",
+    description: "Introduce your family and friends in German.",
+    type: "vocabulary",
+    xp: 15,
+    order: 6,
+    goals: ["Talk about family", "Introduce others"],
+    activities: [
+      {
+        id: "de-l6-a1",
+        type: "vocabulary_match",
+        instruction: "Match German family words with their English translations.",
+        pairs: [
+          { word: "Familie", translation: "family" },
+          { word: "Mutter", translation: "mother" },
+          { word: "Vater", translation: "father" },
+          { word: "Freund", translation: "friend" },
+        ],
+      },
+    ],
+  },
+
+  // --- KOREAN LESSONS ---
+  {
+    id: "ko-l1",
+    unitId: "ko-unit-1",
+    title: "Annyeong!",
+    description: "Learn basic Korean greetings and polite expressions.",
+    type: "vocabulary",
+    xp: 10,
+    order: 1,
+    goals: ["Greet someone in Korean", "Say thank you", "Say goodbye"],
+    activities: [
+      {
+        id: "ko-l1-a1",
+        type: "vocabulary_match",
+        instruction: "Match Korean words with their English translations.",
+        pairs: [
+          { word: "안녕하세요 (annyeonghaseyo)", translation: "hello" },
+          { word: "감사합니다 (gamsahamnida)", translation: "thank you" },
+          { word: "안녕히 가세요 (annyeonghi gaseyo)", translation: "goodbye" },
+          { word: "네 (ne)", translation: "yes" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ko-l2",
+    unitId: "ko-unit-1",
+    title: "Daily Life",
+    description: "Talk about days, time, and routines in Korean.",
+    type: "vocabulary",
+    xp: 12,
+    order: 2,
+    goals: ["Say days of the week", "Use simple time expressions"],
+    activities: [
+      {
+        id: "ko-l2-a1",
+        type: "vocabulary_match",
+        instruction: "Match Korean words with their English translations.",
+        pairs: [
+          { word: "오늘 (oneul)", translation: "today" },
+          { word: "아침 (achim)", translation: "morning" },
+          { word: "저녁 (jeonyeok)", translation: "evening" },
+          { word: "내일 (naeil)", translation: "tomorrow" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ko-l3",
+    unitId: "ko-unit-1",
+    title: "At the Café",
+    description: "Order coffee and snacks at a Korean café.",
+    type: "audio",
+    xp: 15,
+    order: 3,
+    goals: ["Order food", "Use polite expressions"],
+    activities: [
+      {
+        id: "ko-l3-a1",
+        type: "vocabulary_match",
+        instruction: "Match Korean café words with their English translations.",
+        pairs: [
+          { word: "커피 (keopi)", translation: "coffee" },
+          { word: "물 (mul)", translation: "water" },
+          { word: "메뉴 (menyu)", translation: "menu" },
+          { word: "주세요 (juseyo)", translation: "please give me" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ko-l4",
+    unitId: "ko-unit-1",
+    title: "Travel & Directions",
+    description: "Navigate Seoul and ask for directions in Korean.",
+    type: "vocabulary",
+    xp: 15,
+    order: 4,
+    goals: ["Ask for directions", "Know key direction words"],
+    activities: [
+      {
+        id: "ko-l4-a1",
+        type: "vocabulary_match",
+        instruction: "Match Korean direction words with their English translations.",
+        pairs: [
+          { word: "왼쪽 (oenjjok)", translation: "left" },
+          { word: "오른쪽 (oreunjjok)", translation: "right" },
+          { word: "직진 (jikjin)", translation: "straight" },
+          { word: "역 (yeok)", translation: "station" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ko-l5",
+    unitId: "ko-unit-1",
+    title: "Shopping",
+    description: "Shop in Korea and ask how much things cost.",
+    type: "vocabulary",
+    xp: 15,
+    order: 5,
+    goals: ["Ask for prices", "Use numbers"],
+    activities: [
+      {
+        id: "ko-l5-a1",
+        type: "vocabulary_match",
+        instruction: "Match Korean shopping words with their English translations.",
+        pairs: [
+          { word: "얼마 (eolma)", translation: "how much" },
+          { word: "원 (won)", translation: "won (currency)" },
+          { word: "비싸요 (bissayo)", translation: "expensive" },
+          { word: "싸요 (ssayo)", translation: "cheap" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ko-l6",
+    unitId: "ko-unit-1",
+    title: "Family & Friends",
+    description: "Introduce your family and friends in Korean.",
+    type: "vocabulary",
+    xp: 15,
+    order: 6,
+    goals: ["Talk about family", "Introduce others"],
+    activities: [
+      {
+        id: "ko-l6-a1",
+        type: "vocabulary_match",
+        instruction: "Match Korean family words with their English translations.",
+        pairs: [
+          { word: "가족 (gajok)", translation: "family" },
+          { word: "어머니 (eomeoni)", translation: "mother" },
+          { word: "아버지 (abeoji)", translation: "father" },
+          { word: "친구 (chingu)", translation: "friend" },
+        ],
+      },
+    ],
+  },
+
+  // --- CHINESE LESSONS ---
+  {
+    id: "zh-l1",
+    unitId: "zh-unit-1",
+    title: "Nǐ hǎo!",
+    description: "Learn basic Chinese (Mandarin) greetings and politeness.",
+    type: "vocabulary",
+    xp: 10,
+    order: 1,
+    goals: ["Greet in Chinese", "Say thank you", "Say goodbye"],
+    activities: [
+      {
+        id: "zh-l1-a1",
+        type: "vocabulary_match",
+        instruction: "Match Chinese words with their English translations.",
+        pairs: [
+          { word: "你好 (nǐ hǎo)", translation: "hello" },
+          { word: "谢谢 (xièxie)", translation: "thank you" },
+          { word: "再见 (zàijiàn)", translation: "goodbye" },
+          { word: "是 (shì)", translation: "yes / is" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "zh-l2",
+    unitId: "zh-unit-1",
+    title: "Daily Life",
+    description: "Talk about your day, time, and routines in Chinese.",
+    type: "vocabulary",
+    xp: 12,
+    order: 2,
+    goals: ["Say days and times", "Use basic verbs"],
+    activities: [
+      {
+        id: "zh-l2-a1",
+        type: "vocabulary_match",
+        instruction: "Match Chinese words with their English translations.",
+        pairs: [
+          { word: "今天 (jīntiān)", translation: "today" },
+          { word: "早上 (zǎoshang)", translation: "morning" },
+          { word: "晚上 (wǎnshang)", translation: "evening" },
+          { word: "明天 (míngtiān)", translation: "tomorrow" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "zh-l3",
+    unitId: "zh-unit-1",
+    title: "At the Café",
+    description: "Order tea and snacks at a Chinese café.",
+    type: "audio",
+    xp: 15,
+    order: 3,
+    goals: ["Order drinks", "Use polite expressions"],
+    activities: [
+      {
+        id: "zh-l3-a1",
+        type: "vocabulary_match",
+        instruction: "Match Chinese café words with their English translations.",
+        pairs: [
+          { word: "茶 (chá)", translation: "tea" },
+          { word: "咖啡 (kāfēi)", translation: "coffee" },
+          { word: "水 (shuǐ)", translation: "water" },
+          { word: "请 (qǐng)", translation: "please" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "zh-l4",
+    unitId: "zh-unit-1",
+    title: "Travel & Directions",
+    description: "Get around Beijing and ask for directions in Mandarin.",
+    type: "vocabulary",
+    xp: 15,
+    order: 4,
+    goals: ["Ask for directions", "Know key direction words"],
+    activities: [
+      {
+        id: "zh-l4-a1",
+        type: "vocabulary_match",
+        instruction: "Match Chinese direction words with their English translations.",
+        pairs: [
+          { word: "左 (zuǒ)", translation: "left" },
+          { word: "右 (yòu)", translation: "right" },
+          { word: "直走 (zhí zǒu)", translation: "go straight" },
+          { word: "车站 (chēzhàn)", translation: "station" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "zh-l5",
+    unitId: "zh-unit-1",
+    title: "Shopping",
+    description: "Shop in China and ask how much things cost.",
+    type: "vocabulary",
+    xp: 15,
+    order: 5,
+    goals: ["Ask for prices", "Use numbers"],
+    activities: [
+      {
+        id: "zh-l5-a1",
+        type: "vocabulary_match",
+        instruction: "Match Chinese shopping words with their English translations.",
+        pairs: [
+          { word: "多少钱 (duōshǎo qián)", translation: "how much" },
+          { word: "元 (yuán)", translation: "yuan (currency)" },
+          { word: "贵 (guì)", translation: "expensive" },
+          { word: "便宜 (piányi)", translation: "cheap" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "zh-l6",
+    unitId: "zh-unit-1",
+    title: "Family & Friends",
+    description: "Introduce your family and friends in Chinese.",
+    type: "vocabulary",
+    xp: 15,
+    order: 6,
+    goals: ["Talk about family", "Introduce others"],
+    activities: [
+      {
+        id: "zh-l6-a1",
+        type: "vocabulary_match",
+        instruction: "Match Chinese family words with their English translations.",
+        pairs: [
+          { word: "家人 (jiārén)", translation: "family" },
+          { word: "妈妈 (māma)", translation: "mother" },
+          { word: "爸爸 (bàba)", translation: "father" },
+          { word: "朋友 (péngyǒu)", translation: "friend" },
+        ],
+      },
+    ],
+  },
 ];
 
 export const vocabulary: VocabularyWord[] = [

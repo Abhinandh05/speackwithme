@@ -36,4 +36,18 @@ export const units: Unit[] = [
     description: "Master basic greetings, introduce yourself, and learn numbers in German.",
     order: 1,
   },
+  {
+    id: "ko-unit-1",
+    languageId: "ko",
+    title: "Unit 1: Hangul & Greetings",
+    description: "Greet people in Korean, say thank you, and learn polite phrases.",
+    order: 1,
+  },
+  {
+    id: "zh-unit-1",
+    languageId: "zh",
+    title: "Unit 1: First Words",
+    description: "Greet people in Mandarin, say thank you, and learn essential expressions.",
+    order: 1,
+  },
 ];
