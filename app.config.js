@@ -5,6 +5,10 @@ const baseConfig = require("./app.json");
 /** @type {import('@expo/config').ExpoConfig} */
 module.exports = {
   ...baseConfig.expo,
+  android: {
+    ...baseConfig.expo.android,
+    package: "com.abhinandhc_31.speackwithme",
+  },
   extra: {
     ...baseConfig.expo.extra,
     posthogProjectToken: process.env.POSTHOG_PROJECT_TOKEN,
